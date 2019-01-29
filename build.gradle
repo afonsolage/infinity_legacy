@@ -1,0 +1,82 @@
+buildscript {
+    ext.kotlinVersion = '1.3.20'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+
+    }
+}
+
+allprojects {
+    apply plugin: "idea"
+    apply plugin: "kotlin"
+
+    version = '1.0'
+    ext {
+        appName = "infinity"
+        jmeVersion = "3.2.2-stable"
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+        jcenter()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    }
+
+    dependencies {
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.+"
+    }
+
+    idea {
+        module {
+            downloadJavadoc = true
+            downloadSources = true
+        }
+    }
+}
+
+project(":logic") {
+    apply plugin: "kotlin"
+
+    dependencies {
+        api "org.jmonkeyengine:jme3-core:$jmeVersion"
+
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.2.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}
+
+project(":core") {
+    apply plugin: "kotlin"
+
+    dependencies {
+        implementation project(":logic")
+    }
+}
+
+project(":desktop") {
+    apply plugin: "kotlin"
+
+    dependencies {
+        implementation project(":core")
+        runtime "org.jmonkeyengine:jme3-desktop:$jmeVersion"
+        runtime "org.jmonkeyengine:jme3-lwjgl:$jmeVersion"
+    }
+}
